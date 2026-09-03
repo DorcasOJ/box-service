@@ -131,24 +131,6 @@ public class BoxController {
         );
     }
 
-    @PostMapping("/{boxId}/loading/start")
-    public ResponseEntity<BoxResponse> startLoading(
-            @PathVariable UUID boxId
-    ) {
-        return ResponseEntity.ok(
-                boxService.startLoading(boxId)
-        );
-    }
-
-    @PostMapping("/{boxId}/loading/complete")
-    public ResponseEntity<BoxResponse> completeLoading(
-            @PathVariable UUID boxId
-    ) {
-        return ResponseEntity.ok(
-                boxService.completeLoading(boxId)
-        );
-    }
-
 
     @PatchMapping("/{boxId}/camera/toggle")
     public ResponseEntity<ApiResponse<BoxResponse>> toggleCamera(
