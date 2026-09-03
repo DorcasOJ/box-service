@@ -88,4 +88,34 @@ public class BoxDto {
         }
     }
 
+    public record BoxReadinessResponse(
+            UUID boxId,
+            String txref,
+            boolean ready,
+            BoxState state,
+            BatteryStatus battery,
+            CapacityStatus capacity,
+            CameraStatus camera,
+            List<String> issues
+    ) {
+    }
+
+    public record BatteryStatus(
+            int level,
+            int minimumRequired,
+            boolean sufficient
+    ) {
+    }
+
+    public record CameraStatus(
+            boolean enabled
+    ) {
+    }
+    public record CapacityStatus(
+            int maximum,
+            int current,
+            int remaining,
+            boolean available
+    ) {
+    }
 }

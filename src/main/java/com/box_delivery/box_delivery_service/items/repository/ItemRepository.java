@@ -15,10 +15,10 @@ public interface ItemRepository extends JpaRepository<ItemEntity, UUID> {
 
     @Query("""
         SELECT COALESCE(SUM(i.weight), 0)
-        FROM Item i
-        WHERE i.box.id = :boxId
+        FROM ItemEntity i
+        WHERE i.boxId = :boxId
     """)
     Integer sumWeightByBoxId(UUID boxId);
 
-    List<ItemEntity> findByBoxId(UUID boxId);
+    List<ItemEntity> AndDeletedFalse(UUID boxId);
 }

@@ -147,6 +147,8 @@ create a local PostgreSQL, create a ```.env file, edit
 Then run
 ### .\gradlew clean build
 
-When build is complete run
+When build is complete, run
 ### java -jar build/libs/box-delivery-service-0.0.1-SNAPSHOT.jar
 
+And run this on your browser
+### http://localhost:8080/swagger-ui/index.html#/

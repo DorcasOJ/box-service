@@ -4,6 +4,7 @@ import com.box_delivery.box_delivery_service.boxes.enums.BoxState;
 import com.box_delivery.box_delivery_service.common.entity.BaseEntity;
 import com.box_delivery.box_delivery_service.common.exception.InvalidResourceException;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,10 +31,12 @@ public class BoxEntity extends BaseEntity {
     @Column(nullable = false)
     private Integer maxWeight;
 
+    @Builder.Default
     @Column(nullable = false)
     private Integer currentWeight = 0;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean cameraEnabled = true;
 
     public int getRemainingCapacity() {

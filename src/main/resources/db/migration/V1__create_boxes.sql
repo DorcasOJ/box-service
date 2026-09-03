@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS boxes (
     deleted_at TIMESTAMP,
 --    deleted_by UUID,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-     updated_at TIMESTAMP NOT NULL
+     updated_at TIMESTAMP
 );
 CREATE INDEX idx_boxes_id ON boxes(id);
 CREATE INDEX idx_boxes_deleted_at ON boxes(id, deleted_at);

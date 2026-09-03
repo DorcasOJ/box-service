@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ public class BoxService {
     private final BoxMapper boxMapper;
     private final ItemMapper itemMapper;
     private final static Integer MINIMUM_LOADING_BATTERY  =25;
+    private final static Integer BATTERY_FOR_LOADING_ITEMS  =15;
 
     @Transactional
     public BoxResponse createBox(BoxDto.CreateBoxRequest request){
@@ -132,10 +134,22 @@ public class BoxService {
         box.setCurrentWeight(
                 box.getCurrentWeight() + incomingWeight
         );
+        box.setBatteryLevel(box.getBatteryLevel() - BATTERY_FOR_LOADING_ITEMS);
         box.setState(BoxState.LOADED);
         boxRepository.save(box);
 
         return boxMapper.toBoxLoadedResponse(box, request.createItemRequests().size(), items);
+    }
+
+    public BoxResponse rechargeBattery(UUID boxId) {
+        BoxEntity box = boxRepository.findById(boxId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Box not found: " + boxId
+                        )
+                );
+        box.setBatteryLevel(box.getBatteryLevel() + MINIMUM_LOADING_BATTERY);
+        return boxMapper.toResponse(boxRepository.save(box));
     }
 
 
@@ -159,7 +173,7 @@ public class BoxService {
             );
         }
 
-        return itemRepository.findByBoxId(boxId)
+        return itemRepository.AndDeletedFalse(boxId)
                 .stream()
                 .map(itemMapper::toResponse)
                 .toList();
@@ -190,6 +204,64 @@ public class BoxService {
                 .toList();
     }
 
+    @Transactional
+    public BoxDto.BoxReadinessResponse getReadiness(UUID boxId) {
+
+        BoxEntity box = boxRepository.findById(boxId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Box not found: " + boxId
+                        )
+                );
+
+        List<String> issues = new ArrayList<>();
+
+        boolean batterySufficient =
+                box.getBatteryLevel() >= MINIMUM_LOADING_BATTERY;
+
+        boolean stateReady =
+                box.getState() == BoxState.IDLE;
+
+        boolean capacityAvailable =
+                box.getCurrentWeight() < box.getMaxWeight();
+        if (!batterySufficient) {
+            issues.add(
+                    "Battery level is below the minimum loading requirement"
+            );
+        }
+
+        if (!stateReady) {
+            issues.add(
+                    "Box is not in IDLE state"
+            );
+        }
+
+        if (!capacityAvailable) {
+            issues.add(
+                    "Box has no remaining capacity"
+            );
+        }
+
+        return new BoxDto.BoxReadinessResponse(
+                box.getId(),
+                box.getTxref(),
+                issues.isEmpty(),
+                box.getState(),
+                new BoxDto.BatteryStatus(
+                        box.getBatteryLevel(),
+                        MINIMUM_LOADING_BATTERY,
+                        batterySufficient
+                ),
+                new BoxDto.CapacityStatus(
+                        box.getMaxWeight(),
+                        box.getCurrentWeight(),
+                        box.getMaxWeight() - box.getCurrentWeight(),
+                        capacityAvailable
+                ),
+                new BoxDto.CameraStatus(box.isCameraEnabled()),
+                issues
+        );
+    }
 
     public void deleteBox(UUID id) {
 

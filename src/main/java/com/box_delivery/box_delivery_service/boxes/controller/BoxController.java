@@ -151,6 +151,26 @@ public class BoxController {
         );
     }
 
+    @PatchMapping("/{boxId}/battery/recharge")
+    public ResponseEntity<ApiResponse<BoxResponse>> rechargeBattery(
+            @PathVariable UUID boxId) {
+        return ResponseEntity.ok(apiResponseMapper.toResponse(
+                boxService.rechargeBattery(boxId)
+                )
+        );
+    }
+
+
+    @GetMapping("/{boxId}/readiness")
+    public ResponseEntity<ApiResponse<BoxDto.BoxReadinessResponse>> getBoxReadiness(
+            @PathVariable UUID boxId
+    ) {
+        return ResponseEntity.ok( apiResponseMapper.toResponse(
+                boxService.getReadiness(boxId)
+                )
+        );
+    }
+
 
     @Operation(
             summary = "Delete a box",

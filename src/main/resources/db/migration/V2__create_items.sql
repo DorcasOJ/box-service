@@ -4,13 +4,14 @@ CREATE TABLE IF NOT EXISTS items (
    name VARCHAR(255) NOT NULL,
    weight INTEGER NOT NULL,
    code VARCHAR(255) NOT NULL UNIQUE,
+   status VARCHAR(50) NOT NULL DEFAULT 'LOADED',
 
 
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMP,
 --    deleted_by UUID,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
 
    CONSTRAINT fk_item_box
          FOREIGN KEY (box_id)
