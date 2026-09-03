@@ -1,8 +1,9 @@
-package com.vehiqon.common.api.dto.response;
+package com.box_delivery.box_delivery_service.common.response;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
+
 
 @Builder
 @Getter
@@ -14,9 +15,7 @@ public class ApiError<T> {
     private String responseCode;
     private String message;
     private T error;
-//    "error": { "code": "CAR_NOT_FOUND", "message": "Car not found", "details": null },
     private String path;
-    private String requestId;
     @Builder.Default
     private LocalDateTime timestamp = LocalDateTime.now();
 }

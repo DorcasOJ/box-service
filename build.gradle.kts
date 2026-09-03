@@ -35,6 +35,8 @@ dependencies {
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
 
 //	testImplementation("org.assertj:assertj-core:3.25.3")
 //	testImplementation(platform("org.junit:junit-bom:5.10.0"))

@@ -1,4 +1,4 @@
-package com.vehiqon.common.api.dto.response;
+package com.box_delivery.box_delivery_service.common.response;
 
 import lombok.*;
 
