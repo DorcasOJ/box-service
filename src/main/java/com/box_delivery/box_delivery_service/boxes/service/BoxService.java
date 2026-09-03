@@ -249,20 +249,20 @@ public class BoxService {
         return BoxDto.BatteryResponse.from(box);
     }
 
-    @Transactional
-    public List<ItemResponse> getLoadedItems(UUID boxId) {
-
-        if (!boxRepository.existsById(boxId)) {
-            throw new ResourceNotFoundException(
-                    "Box not found: " + boxId
-            );
-        }
-
-        return itemRepository.findByBoxIdAndDeletedFalse(boxId)
-                .stream()
-                .map(item ->  itemMapper.toResponse((ItemEntity) item))
-                .toList();
-    }
+//    @Transactional
+//    public List<ItemResponse> getLoadedItems(UUID boxId) {
+//
+//        if (!boxRepository.existsById(boxId)) {
+//            throw new ResourceNotFoundException(
+//                    "Box not found: " + boxId
+//            );
+//        }
+//
+//        return itemRepository.findByBoxIdAndDeletedFalse(boxId)
+//                .stream()
+//                .map(item ->  itemMapper.toResponse((ItemEntity) item))
+//                .toList();
+//    }
 
     public BoxResponse toggleCamera(UUID boxId) {
 

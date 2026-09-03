@@ -112,15 +112,15 @@ public class BoxController {
 
 
 
-    @GetMapping("/{boxId}/items")
-    public ResponseEntity<ApiResponse<List<ItemResponse>>> getItems(
-            @PathVariable UUID boxId) {
-
-        return ResponseEntity.ok( apiResponseMapper.toResponse(
-                boxService.getLoadedItems(boxId)
-                )
-        );
-    }
+//    @GetMapping("/{boxId}/items")
+//    public ResponseEntity<ApiResponse<List<ItemResponse>>> getItems(
+//            @PathVariable UUID boxId) {
+//
+//        return ResponseEntity.ok( apiResponseMapper.toResponse(
+//                boxService.getLoadedItems(boxId)
+//                )
+//        );
+//    }
 
     @GetMapping("/available")
     public ResponseEntity<ApiResponse<List<BoxResponse>>> getAvailableBoxes() {
