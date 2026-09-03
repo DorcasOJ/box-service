@@ -27,7 +27,6 @@ public class ItemEntity extends BaseEntity {
 
     private String code;
 
-    @Column(name = "box_id", nullable = false)
     private UUID boxId;
 
     @Enumerated(EnumType.STRING)

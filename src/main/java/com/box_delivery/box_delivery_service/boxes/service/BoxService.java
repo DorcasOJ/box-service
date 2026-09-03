@@ -212,7 +212,7 @@ public class BoxService {
             );
         }
 
-        List<ItemEntity> items = itemRepository.FindByBoxIdAndDeletedFalse(boxId).orElseThrow(
+        List<ItemEntity> items = itemRepository.findByBoxIdAndDeletedFalse(boxId).orElseThrow(
                 ()-> new ResourceNotFoundException("item not found")
         );
 
@@ -258,7 +258,7 @@ public class BoxService {
             );
         }
 
-        return itemRepository.FindByBoxIdAndDeletedFalse(boxId)
+        return itemRepository.findByBoxIdAndDeletedFalse(boxId)
                 .stream()
                 .map(item ->  itemMapper.toResponse((ItemEntity) item))
                 .toList();

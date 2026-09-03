@@ -20,5 +20,5 @@ public interface ItemRepository extends JpaRepository<ItemEntity, UUID> {
     """)
     Integer sumWeightByBoxId(UUID boxId);
 
-    Optional<List<ItemEntity>> FindByBoxIdAndDeletedFalse(UUID boxId);
+    Optional<List<ItemEntity>> findByBoxIdAndDeletedFalse(UUID boxId);
 }
