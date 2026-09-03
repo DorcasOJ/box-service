@@ -9,11 +9,16 @@ import org.springframework.stereotype.Component;
 public class ItemMapper {
     public ItemResponse toResponse(ItemEntity item) {
         return new ItemResponse(item.getId(), item.getName(),
-                item.getWeight(), item.getCode());
+                item.getWeight(), item.getCode(), item.getStatus());
     }
 
     public ItemEntity toUpdate(ItemDto.UpdateItemRequest request, ItemEntity itemEntity) {
-        itemEntity.setWeight(request.weight());
+        if (request.weight() != null) {
+            itemEntity.setWeight(request.weight());
+        }
+        if (request.status() != null) {
+            itemEntity.setStatus(request.status());
+        }
         return itemEntity;
     }
 

@@ -1,5 +1,6 @@
 package com.box_delivery.box_delivery_service.items.dto;
 
+import com.box_delivery.box_delivery_service.items.enums.ItemStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -38,7 +39,8 @@ public class ItemDto {
 
     public record UpdateItemRequest(
             UUID id,
-            Integer weight
+            Integer weight,
+            ItemStatus status
     ){}
 
 

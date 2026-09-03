@@ -6,12 +6,11 @@ import com.box_delivery.box_delivery_service.boxes.entity.BoxEntity;
 import com.box_delivery.box_delivery_service.boxes.enums.BoxState;
 import com.box_delivery.box_delivery_service.boxes.mapper.BoxMapper;
 import com.box_delivery.box_delivery_service.boxes.repository.BoxRepository;
-import com.box_delivery.box_delivery_service.common.exception.CapacityExceededException;
-import com.box_delivery.box_delivery_service.common.exception.InvalidResourceException;
-import com.box_delivery.box_delivery_service.common.exception.ResourceAlreadyExistException;
-import com.box_delivery.box_delivery_service.common.exception.ResourceNotFoundException;
+import com.box_delivery.box_delivery_service.common.exception.*;
 import com.box_delivery.box_delivery_service.items.dto.ItemDto;
 import com.box_delivery.box_delivery_service.items.dto.ItemResponse;
+import com.box_delivery.box_delivery_service.items.entity.ItemEntity;
+import com.box_delivery.box_delivery_service.items.enums.ItemStatus;
 import com.box_delivery.box_delivery_service.items.mapper.ItemMapper;
 import com.box_delivery.box_delivery_service.items.repository.ItemRepository;
 import com.box_delivery.box_delivery_service.items.service.ItemService;
@@ -141,6 +140,91 @@ public class BoxService {
         return boxMapper.toBoxLoadedResponse(box, request.createItemRequests().size(), items);
     }
 
+    @Transactional
+    public BoxResponse startLoading(UUID boxId) {
+
+        BoxEntity box = boxRepository.findByIdForUpdate(boxId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Box not found: " + boxId
+                        )
+                );
+
+        if (box.getState() != BoxState.IDLE) {
+            throw new InvalidResourceException(
+                    "Box cannot start loading from state "
+                            + box.getState()
+            );
+        }
+
+        if (box.getBatteryLevel() < MINIMUM_LOADING_BATTERY) {
+            throw new InvalidResourceException(
+                    "Box battery must be at least "
+                            + MINIMUM_LOADING_BATTERY + "%"
+            );
+        }
+
+        box.setState(BoxState.LOADING);
+
+        return boxMapper.toResponse(boxRepository.save(box));
+    }
+
+    @Transactional
+    public BoxResponse completeLoading(UUID boxId) {
+
+        BoxEntity box = boxRepository.findByIdForUpdate(boxId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Box not found: " + boxId
+                        )
+                );
+
+        if (box.getState() != BoxState.LOADING) {
+            throw new InvalidResourceException(
+                    "Box is not currently loading"
+            );
+        }
+
+        if (box.getCurrentWeight() <= 0) {
+            throw new InvalidResourceException(
+                    "Cannot complete loading because the box is empty"
+            );
+        }
+
+        box.setState(BoxState.LOADED);
+
+        return boxMapper.toResponse(boxRepository.save(box));
+    }
+
+    @Transactional
+    public void offloadBox(UUID boxId) {
+
+        BoxEntity box = boxRepository.findByIdForUpdate(boxId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Box not found: " + boxId
+                        )
+                );
+
+        if (box.getState() != BoxState.DELIVERED) {
+            throw new InvalidResourceException(
+                    "Only delivered boxes can be offloaded"
+            );
+        }
+
+        List<ItemEntity> items = itemRepository.FindByBoxIdAndDeletedFalse(boxId).orElseThrow(
+                ()-> new ResourceNotFoundException("item not found")
+        );
+
+        items.forEach(item ->
+                item.setStatus(ItemStatus.OFFLOADED)
+        );
+
+        box.setCurrentWeight(0);
+        box.setState(BoxState.RETURNING);
+        boxRepository.save(box);
+    }
+
     public BoxResponse rechargeBattery(UUID boxId) {
         BoxEntity box = boxRepository.findById(boxId)
                 .orElseThrow(() ->
@@ -151,6 +235,7 @@ public class BoxService {
         box.setBatteryLevel(box.getBatteryLevel() + MINIMUM_LOADING_BATTERY);
         return boxMapper.toResponse(boxRepository.save(box));
     }
+
 
 
     @Transactional
@@ -173,9 +258,9 @@ public class BoxService {
             );
         }
 
-        return itemRepository.AndDeletedFalse(boxId)
+        return itemRepository.FindByBoxIdAndDeletedFalse(boxId)
                 .stream()
-                .map(itemMapper::toResponse)
+                .map(item ->  itemMapper.toResponse((ItemEntity) item))
                 .toList();
     }
 
